@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Product;
+use App\Models\Feedback;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,15 +15,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('feedbacks', function (Blueprint $table) {
+        Schema::create('feedback_likes', function (Blueprint $table) {
             $table->id();
-            $table->string('place');
-            $table->integer('rating');
-            $table->string('categorie');
-            $table->string('image');
-            $table->string('comment');
-            $table->string('city');
-            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(Feedback::class)->constrained('feedbacks')->onDelete('cascade');
+            $table->foreignIdFor(User::class)->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -35,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('feedbacks');
+        Schema::dropIfExists('feedback_likes');
     }
 };

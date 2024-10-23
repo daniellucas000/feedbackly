@@ -15,6 +15,7 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         $feedbacks = Feedback::select(
+            'feedbacks.id',
             'feedbacks.place',
             'feedbacks.rating',
             'feedbacks.categorie',

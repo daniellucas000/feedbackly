@@ -8,6 +8,7 @@ import { Head } from "@inertiajs/vue3";
 const { feedbacks, query } = usePage().props;
 
 const searchQuery = ref(query || "");
+const isLiking = ref(false);
 
 function search() {
     let params = {};
@@ -20,6 +21,19 @@ function search() {
         route("dashboard"),
         params,
         { replace: true },
+        {
+            onFinish: () => {
+                console.log("oi");
+            },
+        }
+    );
+}
+
+function like(id) {
+    isLiking.value = true;
+    router.post(
+        route("feedbacks.likes", { id: id }),
+        {},
         {
             onFinish: () => {
                 console.log("oi");
@@ -62,6 +76,9 @@ function search() {
                 <img :src="feedback.image" alt="" />
                 <div>
                     <span>{{ feedback.categorie }}</span>
+                    <button @click="like(feedback.id)" :disabled="isLiking">
+                        👍
+                    </button>
                     <span>{{ feedback.city }}</span>
                 </div>
             </div>
