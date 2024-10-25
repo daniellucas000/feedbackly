@@ -13,20 +13,32 @@ class FeedbackLikeController extends Controller
     public function store($id)
     {
         $id_user = Auth::id();
-
         $feedback = Feedback::where('id', $id)->first();
 
         if (empty($feedback)) {
-            return Inertia::render('Feedback/Error', [
+            return Inertia::render('dashboard', [
                 'error' => 'Feedback não encontrado'
             ]);
         }
 
-        $feedbackLike = FeedbackLike::create([
+        $likeExisting = FeedbackLike::where('feedback_id', $id)
+            ->where('user_id', $id_user)
+            ->first();
+
+        if ($likeExisting) {
+            $likeExisting->delete();
+            return Inertia::location(route('dashboard'), [
+                'message' => 'Like removido'
+            ]);
+        }
+
+        FeedbackLike::create([
             'feedback_id' => $id,
             'user_id' => $id_user,
         ]);
 
-        return Inertia::location(route('dashboard'), $feedbackLike);
+        return Inertia::render('dashboard', [
+            'message' => 'Like adicionado'
+        ]);
     }
 }

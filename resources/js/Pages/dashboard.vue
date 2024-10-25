@@ -4,11 +4,25 @@ import { usePage, router } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
 import { Head } from "@inertiajs/vue3";
+import { Heart, Star } from "lucide-vue-next";
 
 const { feedbacks, query } = usePage().props;
 
+console.log(feedbacks);
+
 const searchQuery = ref(query || "");
 const isLiking = ref(false);
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        timeZone: "UTC",
+    };
+    return date.toLocaleString("pt-BR", options);
+}
 
 function search() {
     let params = {};
@@ -47,11 +61,6 @@ function like(id) {
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Dashboard
-            </h2>
-        </template>
         <form @submit.prevent="search">
             <input v-model="searchQuery" type="text" />
         </form>
@@ -59,25 +68,24 @@ function like(id) {
             <div v-for="feedback in feedbacks">
                 <div>
                     <img :src="feedback.profile" alt="" />
-                    <h4>
-                        {{ feedback.user_name }}
-                    </h4>
+                    <div>
+                        <h4>
+                            {{ feedback.user_name }}
+                        </h4>
+                        <small>{{ formatDate(feedback.created_at) }}</small>
+                    </div>
                 </div>
+                <strong>{{ feedback.place }}</strong>
                 <div class="rating">
-                    <span
-                        class="star"
-                        v-for="star in feedback.rating"
-                        :key="star"
-                    >
-                        ⭐
-                    </span>
+                    <Star v-for="star in feedback.rating" :key="star" />
                 </div>
-                <p>{{ feedback.comment }}</p>
+                <span>{{ feedback.categorie }}</span>
                 <img :src="feedback.image" alt="" />
+                <p>{{ feedback.comment }}</p>
                 <div>
-                    <span>{{ feedback.categorie }}</span>
                     <button @click="like(feedback.id)" :disabled="isLiking">
-                        👍
+                        <Heart :class="{ liked: feedback.has_liked }" />
+                        {{ feedback.likes_count }}
                     </button>
                     <span>{{ feedback.city }}</span>
                 </div>
@@ -102,7 +110,7 @@ nav {
 
         > div:nth-child(1) {
             display: flex;
-            align-items: center;
+            /* align-items: center; */
             gap: 10px;
             padding-bottom: 10px;
             border-bottom: 1px solid #ccc;
@@ -114,10 +122,22 @@ nav {
             }
         }
 
-        div:last-child {
+        > div:nth-child(3) {
+            display: flex;
+            margin: 4px 0;
+        }
+
+        > div:last-child {
             display: flex;
             justify-content: space-between;
             margin-top: 1rem;
+
+            button {
+                svg.liked {
+                    color: red;
+                    fill: red;
+                }
+            }
         }
     }
 }

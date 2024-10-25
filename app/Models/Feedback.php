@@ -19,4 +19,8 @@ class Feedback extends Model
     {
         return $this->hasMany(FeedbackLike::class);
     }
+    public function likeCount()
+    {
+        return $this->likes()->count();
+    }
 }
